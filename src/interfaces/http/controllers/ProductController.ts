@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { SequelizeProductRepository } from '../../../infrastructure/repositories/SequelizeProductRepository';
 import { NotFoundError } from '../middlewares/errorHandler';
 
@@ -26,7 +26,7 @@ export class ProductController {
    */
   getProductById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const id = parseInt(req.params.id, 10);
+      const id = parseInt(req.params.id||"", 10);
       const product = await this.productRepository.findById(id);
       
       if (!product) {
@@ -74,7 +74,7 @@ export class ProductController {
       // TODO: Add validation middleware
       // TODO: Use UpdateProduct use case instead of direct repository access
       
-      const id = parseInt(req.params.id, 10);
+      const id = parseInt(req.params.id||"", 10);
       const { name, price, stock, category } = req.body;
       
       // Check if product exists
@@ -117,7 +117,7 @@ export class ProductController {
    */
   deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const id = parseInt(req.params.id, 10);
+      const id = parseInt(req.params.id||"", 10);
       
       // Check if product exists
       const exists = await this.productRepository.exists(id);

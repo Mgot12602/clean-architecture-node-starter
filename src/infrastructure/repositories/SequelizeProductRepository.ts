@@ -1,4 +1,4 @@
-import { ProductRepository } from "../../domain/repositories/ProductRepository";
+import type { ProductRepository } from "../../domain/repositories/ProductRepository";
 import { Product } from "../../domain/entities/Product";
 import { ProductModel } from "../database/sqlite/schemas/ProductSchema";
 import { Category } from "../../domain/types/Category";
@@ -7,6 +7,7 @@ import { Op } from "sequelize";
 export class SequelizeProductRepository implements ProductRepository {
     
     async save(product: Product): Promise<Product> {
+        console.log('Repository save input:', product);
         const productData = {
             name: product.name,
             price: product.price,
@@ -15,8 +16,11 @@ export class SequelizeProductRepository implements ProductRepository {
             createdAt: product.createdAt,
             updatedAt: product.updatedAt
         };
+        console.log('Data to save:', productData);
 
         const savedProduct = await ProductModel.create(productData);
+        console.log('Saved product from DB:', savedProduct.toJSON());
+        console.log("Without json:", savedProduct)
         return this.toDomainEntity(savedProduct);
     }
 
@@ -207,6 +211,7 @@ export class SequelizeProductRepository implements ProductRepository {
     }
 
     private toDomainEntity(productModel: ProductModel): Product {
+        console.log("productModel", productModel)
         const product = new Product(
             productModel.name,
             productModel.price,

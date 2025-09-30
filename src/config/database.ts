@@ -32,12 +32,3 @@ export const databaseConfig = {
 };
 
 // Ensure the SQLite database directory exists
-export const ensureDatabaseDirectory = (): void => {
-  const dbPath = databaseConfig.sqlite.storage;
-  const dbDir = path.dirname(dbPath);
-  
-  if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true });
-    console.log(`Created database directory: ${dbDir}`);
-  }
-};

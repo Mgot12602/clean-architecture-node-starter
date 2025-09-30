@@ -2,13 +2,13 @@ import { DataTypes, Model, Sequelize } from "sequelize";
 import { Category } from "../../../../domain/types/Category";
 
 export class ProductModel extends Model {
-    public id!: number;
-    public name!: string;
-    public price!: number;
-    public stock!: number;
-    public category!: string;
-    public createdAt!: Date;
-    public updatedAt!: Date;
+    declare id: number;
+    declare name: string;
+    declare price: number;
+    declare stock: number;
+    declare category: string;
+    declare createdAt: Date;
+    declare updatedAt: Date;
 }
 
 export const initProductModel = (sequelize: Sequelize) => {

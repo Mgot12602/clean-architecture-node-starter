@@ -1,11 +1,9 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
+import express from 'express';
+import type { Request, Response, NextFunction,Application } from 'express';
 import dotenv from 'dotenv';
-import path from 'path';
 
-// Import routes
 import productRoutes from './interfaces/http/routes/ProductRoutes';
 
-// Import middlewares
 import { errorHandler, notFoundHandler } from './interfaces/http/middlewares/errorHandler';
 import { loggerMiddleware } from './interfaces/http/middlewares/loggerMiddleware';
 
@@ -56,8 +54,6 @@ class App {
     // API routes
     this.app.use('/api/products', productRoutes);
     
-    // TODO: Import and use user routes when implemented
-    // this.app.use('/api/users', userRoutes);
   }
 
   private errorHandling(): void {

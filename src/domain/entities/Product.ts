@@ -45,7 +45,12 @@ export class Product {
 
 
   private isValidCategory(category:string):category is Category{
-    return category in Category;
+    console.log('Checking category:', category);
+    console.log('Valid categories:', Object.values(Category));
+    const isValid = Object.values(Category).includes(category as Category);
+    console.log('Is valid?', isValid);
+    return isValid;
+
 }
   setCategory(category:Category|string){
     if(!this.isValidCategory(category)){

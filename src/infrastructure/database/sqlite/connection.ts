@@ -2,6 +2,7 @@ import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import { databaseConfig } from '../../../config/database';
 
 // Load environment variables
 dotenv.config();
@@ -67,6 +68,17 @@ export const initDatabase = async (): Promise<void> => {
   } catch (error) {
     console.error('Failed to initialize database:', error);
     throw error;
+  }
+};
+
+
+export const ensureDatabaseDirectory = (): void => {
+  const dbPath = databaseConfig.sqlite.storage;
+  const dbDir = path.dirname(dbPath);
+  
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+    console.log(`Created database directory: ${dbDir}`);
   }
 };
 
