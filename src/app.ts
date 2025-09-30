@@ -1,8 +1,9 @@
 import express from 'express';
-import type { Request, Response, NextFunction,Application } from 'express';
+import type { Request, Response, NextFunction, Application } from 'express';
 import dotenv from 'dotenv';
 
-import productRoutes from './interfaces/http/routes/ProductRoutes';
+import { createProductRoutes } from './interfaces/http/routes/ProductRoutes';
+import { container } from './config/container';
 
 import { errorHandler, notFoundHandler } from './interfaces/http/middlewares/errorHandler';
 import { loggerMiddleware } from './interfaces/http/middlewares/loggerMiddleware';
@@ -50,6 +51,10 @@ class App {
         version: '1.0.0',
       });
     });
+
+    // Dependency Injection (Composition Root)
+    // All dependencies are wired in the container
+    const productRoutes = createProductRoutes(container.productController);
 
     // API routes
     this.app.use('/api/products', productRoutes);

@@ -1,20 +1,33 @@
 import type { Request, Response, NextFunction } from 'express';
-import { SequelizeProductRepository } from '../../../infrastructure/repositories/SequelizeProductRepository';
+import type { ProductService } from '../../../application/services/ProductService';
 import { NotFoundError } from '../middlewares/errorHandler';
+import type { CreateProductDTO } from '../../../application/dto/CreateProductDTO';
+import type { UpdateProductDTO } from '../../../application/dto/UpdateProductDTO';
 
+/**
+ * ProductController handles HTTP requests and delegates business logic to ProductService.
+ * 
+ * Responsibilities:
+ * - Parse HTTP requests
+ * - Validate request parameters
+ * - Call appropriate service methods
+ * - Format HTTP responses
+ * - Handle errors
+ * 
+ * Dependencies are injected from the composition root (app.ts)
+ */
 export class ProductController {
-  private productRepository: SequelizeProductRepository;
-
-  constructor() {
-    this.productRepository = new SequelizeProductRepository();
+  constructor(private readonly productService: ProductService) {
+    // Dependencies injected via constructor
   }
 
   /**
    * Get all products
+   * GET /api/products
    */
   getAllProducts = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const products = await this.productRepository.findAll();
+      const products = await this.productService.getAllProducts();
       res.status(200).json(products);
     } catch (error) {
       next(error);
@@ -23,11 +36,12 @@ export class ProductController {
 
   /**
    * Get product by ID
+   * GET /api/products/:id
    */
   getProductById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const id = parseInt(req.params.id||"", 10);
-      const product = await this.productRepository.findById(id);
+      const id = parseInt(req.params.id || "", 10);
+      const product = await this.productService.getProductById(id);
       
       if (!product) {
         throw new NotFoundError(`Product with ID ${id} not found`);
@@ -41,24 +55,18 @@ export class ProductController {
 
   /**
    * Create a new product
+   * POST /api/products
    */
   createProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // TODO: Add validation middleware
-      // TODO: Use CreateProduct use case instead of direct repository access
+      const dto: CreateProductDTO = {
+        name: req.body.name,
+        price: req.body.price,
+        stock: req.body.stock,
+        category: req.body.category
+      };
       
-      const { name, price, stock, category } = req.body;
-      
-      // This is a temporary implementation
-      // In a complete implementation, you would use the CreateProduct use case
-      const product = await this.productRepository.save({
-        name,
-        price,
-        stock,
-        category,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      } as any);
+      const product = await this.productService.createProduct(dto);
       
       res.status(201).json(product);
     } catch (error) {
@@ -68,45 +76,25 @@ export class ProductController {
 
   /**
    * Update a product
+   * PUT /api/products/:id
    */
   updateProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // TODO: Add validation middleware
-      // TODO: Use UpdateProduct use case instead of direct repository access
+      const id = parseInt(req.params.id || "", 10);
+      const dto: UpdateProductDTO = {
+        name: req.body.name,
+        price: req.body.price,
+        stock: req.body.stock,
+        category: req.body.category
+      };
       
-      const id = parseInt(req.params.id||"", 10);
-      const { name, price, stock, category } = req.body;
+      const product = await this.productService.updateProduct(id, dto);
       
-      // Check if product exists
-      const exists = await this.productRepository.exists(id);
-      if (!exists) {
+      if (!product) {
         throw new NotFoundError(`Product with ID ${id} not found`);
       }
       
-      // This is a temporary implementation
-      // In a complete implementation, you would use the UpdateProduct use case
-      let product = await this.productRepository.findById(id);
-      if (!product) {
-        throw new Error('Product not found after existence check');
-      }
-      
-      // Update product properties
-      product.name = name || product.name;
-      product.price = price || product.price;
-      product.stock = stock || product.stock;
-      product.category = category || product.category;
-      product.updatedAt = new Date();
-      
-      // Save updates
-      if (name) await this.productRepository.updateName(product);
-      if (price) await this.productRepository.updatePrice(product);
-      if (stock) await this.productRepository.updateStock(product);
-      if (category) await this.productRepository.updateCategory(product);
-      
-      // Get updated product
-      const updatedProduct = await this.productRepository.findById(id);
-      
-      res.status(200).json(updatedProduct);
+      res.status(200).json(product);
     } catch (error) {
       next(error);
     }
@@ -114,19 +102,17 @@ export class ProductController {
 
   /**
    * Delete a product
+   * DELETE /api/products/:id
    */
   deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const id = parseInt(req.params.id||"", 10);
+      const id = parseInt(req.params.id || "", 10);
       
-      // Check if product exists
-      const exists = await this.productRepository.exists(id);
-      if (!exists) {
+      const deleted = await this.productService.deleteProduct(id);
+      
+      if (!deleted) {
         throw new NotFoundError(`Product with ID ${id} not found`);
       }
-      
-      // Delete product
-      await this.productRepository.delete(id);
       
       res.status(204).send();
     } catch (error) {
@@ -134,5 +120,3 @@ export class ProductController {
     }
   }
 }
-
-export default new ProductController();

@@ -7,20 +7,15 @@ import { Op } from "sequelize";
 export class SequelizeProductRepository implements ProductRepository {
     
     async save(product: Product): Promise<Product> {
-        console.log('Repository save input:', product);
+        // Only pass business data, let Sequelize handle timestamps
         const productData = {
             name: product.name,
             price: product.price,
             stock: product.stock,
-            category: product.category,
-            createdAt: product.createdAt,
-            updatedAt: product.updatedAt
+            category: product.category
         };
-        console.log('Data to save:', productData);
 
         const savedProduct = await ProductModel.create(productData);
-        console.log('Saved product from DB:', savedProduct.toJSON());
-        console.log("Without json:", savedProduct)
         return this.toDomainEntity(savedProduct);
     }
 
@@ -59,8 +54,7 @@ export class SequelizeProductRepository implements ProductRepository {
 
         const [affectedRows] = await ProductModel.update(
             {
-                name: product.name,
-                updatedAt: new Date()
+                name: product.name
             },
             {
                 where: { id: product.id },
@@ -87,8 +81,7 @@ export class SequelizeProductRepository implements ProductRepository {
 
         const [affectedRows] = await ProductModel.update(
             {
-                price: product.price,
-                updatedAt: new Date()
+                price: product.price
             },
             {
                 where: { id: product.id },
@@ -115,8 +108,7 @@ export class SequelizeProductRepository implements ProductRepository {
 
         const [affectedRows] = await ProductModel.update(
             {
-                stock: product.stock,
-                updatedAt: new Date()
+                stock: product.stock
             },
             {
                 where: { id: product.id },
@@ -143,8 +135,7 @@ export class SequelizeProductRepository implements ProductRepository {
 
         const [affectedRows] = await ProductModel.update(
             {
-                category: product.category,
-                updatedAt: new Date()
+                category: product.category
             },
             {
                 where: { id: product.id },
@@ -211,7 +202,6 @@ export class SequelizeProductRepository implements ProductRepository {
     }
 
     private toDomainEntity(productModel: ProductModel): Product {
-        console.log("productModel", productModel)
         const product = new Product(
             productModel.name,
             productModel.price,
