@@ -1,33 +1,23 @@
 import app from './app';
 import dotenv from 'dotenv';
-import { connect, initDatabase } from './infrastructure/database/sqlite/connection';
-import { ensureDatabaseDirectory } from './config/database';
+import { connect, initDatabase, ensureDatabaseDirectory } from './infrastructure/database/sqlite/connection';
 
-// Load environment variables
 dotenv.config();
 
-// Get port from environment or use default
 const PORT = process.env.PORT || 3000;
 
-// Initialize the server
 async function startServer() {
   try {
-    // Ensure database directory exists
     ensureDatabaseDirectory();
     
-    // Connect to database
     const sequelize = await connect();
     
-    // Initialize database models and sync schema
     await initDatabase();
     
-    // Start Express server
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
-      console.log(`API documentation: http://localhost:${PORT}/api-docs`);
     });
     
-    // Handle graceful shutdown
     process.on('SIGINT', async () => {
       console.log('Shutting down server...');
       await sequelize.close();
@@ -46,5 +36,4 @@ async function startServer() {
   }
 }
 
-// Start the server
 startServer();

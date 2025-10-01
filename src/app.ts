@@ -3,12 +3,11 @@ import type { Request, Response, NextFunction, Application } from 'express';
 import dotenv from 'dotenv';
 
 import { createProductRoutes } from './interfaces/http/routes/ProductRoutes';
-import { container } from './config/container';
+import { container } from './infrastructure/container';
 
 import { errorHandler, notFoundHandler } from './interfaces/http/middlewares/errorHandler';
 import { loggerMiddleware } from './interfaces/http/middlewares/loggerMiddleware';
 
-// Load environment variables
 dotenv.config();
 
 class App {
@@ -22,14 +21,12 @@ class App {
   }
 
   private config(): void {
-    // Middleware configuration
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     
-    // Logger middleware
     this.app.use(loggerMiddleware);
     
-    // CORS configuration (if needed)
+    // CORS configuration 
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
@@ -44,7 +41,6 @@ class App {
   }
 
   private routes(): void {
-    // Root route
     this.app.get('/', (req: Request, res: Response) => {
       res.status(200).json({
         message: 'API is running',
@@ -52,8 +48,6 @@ class App {
       });
     });
 
-    // Dependency Injection (Composition Root)
-    // All dependencies are wired in the container
     const productRoutes = createProductRoutes(container.productController);
 
     // API routes

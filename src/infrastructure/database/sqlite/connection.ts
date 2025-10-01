@@ -2,26 +2,19 @@ import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
-import { databaseConfig } from '../../../config/database';
+import { sqliteConfig } from './config';
 
 // Load environment variables
 dotenv.config();
 
-// Get database path from environment or use default
-const dbPath = process.env.DATABASE_PATH || './data/development.sqlite';
-
 // Ensure the directory exists
-const dbDir = path.dirname(dbPath);
+const dbDir = path.dirname(sqliteConfig.storage);
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
 // Create Sequelize instance
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: dbPath,
-  logging: process.env.NODE_ENV === 'development' ? console.log : false,
-});
+const sequelize = new Sequelize(sqliteConfig);
 
 /**
  * Connect to the database
@@ -72,9 +65,11 @@ export const initDatabase = async (): Promise<void> => {
 };
 
 
+/**
+ * Ensure the database directory exists
+ */
 export const ensureDatabaseDirectory = (): void => {
-  const dbPath = databaseConfig.sqlite.storage;
-  const dbDir = path.dirname(dbPath);
+  const dbDir = path.dirname(sqliteConfig.storage);
   
   if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });

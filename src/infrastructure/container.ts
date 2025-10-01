@@ -5,7 +5,7 @@
  * Only the controller is exposed since it's the only dependency needed by app.ts
  */
 
-import { SequelizeProductRepository } from '../infrastructure/repositories/SequelizeProductRepository';
+import { SequelizeProductRepository } from './repositories/SequelizeProductRepository';
 import { ProductService } from '../application/services/ProductService';
 import { ProductController } from '../interfaces/http/controllers/ProductController';
 

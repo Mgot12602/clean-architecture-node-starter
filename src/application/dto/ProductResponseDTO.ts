@@ -1,16 +1,17 @@
 import { Product } from '../../domain/entities/Product';
+import { Category } from '../../domain/types/Category';
 
 export class ProductResponseDTO {
-  public id: number;
+  public id: number | undefined;
   public name: string;
   public price: number;
   public stock: number;
-  public category?: string;
-  public createdAt?: Date;
-  public updatedAt?: Date;
+  public category: Category | undefined;
+  public createdAt: Date | undefined;
+  public updatedAt: Date | undefined;
 
   constructor(product: Product) {
-    this.id = product.id!;
+    this.id = product.id;
     this.name = product.name;
     this.price = product.price;
     this.stock = product.stock;

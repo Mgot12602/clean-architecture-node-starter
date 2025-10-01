@@ -1,5 +1,7 @@
-// src/infrastructure/database/sqlite/config.ts
+import path from 'path';
+
 export const sqliteConfig = {
-    storage: process.env.SQLITE_STORAGE || './data/database.sqlite',
-    logging: process.env.NODE_ENV === 'development',
-  };
+  dialect: 'sqlite' as const,
+  storage: process.env.DATABASE_PATH || path.join(process.cwd(), 'data', 'development.sqlite'),
+  logging: process.env.NODE_ENV === 'development' ? console.log : false,
+};
